@@ -6,7 +6,7 @@ import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import logo from "../../assets/img/book_logo.jpg";
+import logo from "../../assets/img/book_logo.png";
 
 import { Link } from "react-router-dom";
 
@@ -26,14 +26,16 @@ const Navbar = () => {
           fontFamily: "Work Sans"
         }}
       >
+        <Link to="/">
         <Box
         sx={{
           display: "flex" , flexDirection: "row" , height: "100px" , justifyContent: "center"
         }}
         >
         <img src={logo} alt="logo" />
-        <h2 style={{marginTop:"35px"}}>Ebook</h2>
+        <h2 className="text-2xl font-semibold" style={{marginTop:"35px"}}>Ebook</h2>
         </Box>
+        </Link>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <Stack

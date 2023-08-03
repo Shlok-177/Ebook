@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import logo from "../../assets/site-logo.svg";
+import logo from "../../assets/img/book_logo.png";
 const Footer = () => {
   return (
     <Box
       sx={{
-        padding: "20px",
+        padding: "5px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -14,9 +14,23 @@ const Footer = () => {
         marginTop: "auto",
       }}
     >
-      <img src={logo} alt="logo" style={{height:"40px"}} />
-      <Typography variant="body1" gutterBottom sx={{color:"grey", marginTop:"5px"}}>
-        @2023 Tatvasoft.com All rights reserved
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100px",
+          justifyContent: "center",
+        }}
+      >
+        <img src={logo} alt="logo" style={{width: "150px"}} />
+      </Box>
+      <Typography
+        variant="body1"
+        gutterBottom
+        sx={{ color: "grey", marginTop: "5px" }}
+        style={{fontFamily: "Work Sans"}}
+      >
+        @2023 <a href="https://shlokjadeja.tech/" target="_blank" className=" text-blue-800" style={{fontFamily: "Work Sans"}} rel="noreferrer">Shlok Jadeja </a>  All rights reserved
       </Typography>
     </Box>
   );
