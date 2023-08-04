@@ -1,9 +1,11 @@
 
 // eslint-disable-next-line react/prop-types
-const Star = ({isActive}) => {
+const Star = ({key , isActive}) => {
+  console.log(isActive);
+  console.log(key);
   return (
     <svg
-    className={`w-4 h-4 text-${isActive ? 'yellow' : 'gray'}-400`}
+    className={`w-4 h-4 ${isActive ? 'text-yellow-400' : 'text-gray-400'} `}
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill="currentColor"

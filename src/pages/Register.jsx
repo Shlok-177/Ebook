@@ -8,35 +8,70 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const initialValues = {
-  fname: "",
-  lname: "",
+  firstName: "",
+  lastName: "",
   email: "",
-  pass: "",
+  password: "",
   cpass: "",
   role: "",
 };
 
 const registerSchema = Yup.object({
-  fname: Yup.string().min(2).max(25).required("please enter your first name"),
-  lname: Yup.string().min(2).max(25).required("please enter your last name"),
+  firstName: Yup.string().min(2).max(25).required("please enter your first name"),
+  lastName: Yup.string().min(2).max(25).required("please enter your last name"),
   email: Yup.string().email().required("Please enter your email"),
-  pass: Yup.string().min(6).required("Pleaase enter password with min 6 char"),
+  password: Yup.string().min(6).required("Pleaase enter password with min 6 char"),
   cpass: Yup.string()
     .required()
-    .oneOf([Yup.ref("pass"), null], "Password must match"),
+    .oneOf([Yup.ref("password"), null], "Password must match"),
 });
 
 const Register = () => {
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
     initialValues: initialValues,
     validationSchema:registerSchema,
-    onSubmit: (values) => {
-      console.log("form vals", values);
-      alert("sucessfull");
+    onSubmit: async (values) => {
+
+      const dataToSend = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        roleId: values.role == "User" ? 1 : 2,
+        password: values.password
+      };
+      try {
+        const response = await axios.post('http://localhost:5000/api/user', dataToSend);
+        if (response.data.code == 200) {
+          toast.success('User Register successfully!', {
+            position: 'top-right', // Change the position of the toast if needed
+            autoClose: 3000, // Close the toast automatically after 3000ms (3 seconds)
+            hideProgressBar: false, // Show or hide the progress bar
+            closeOnClick: true, // Close the toast when clicked
+            pauseOnHover: true, // Pause the autoClose timer when hovered
+            draggable: true, // Make the toast draggable
+            progress: undefined, // Use the progress prop to set the progress of the toast
+          });
+
+        }
+      } catch (error) {
+        toast.error(`${error.response.data.error}`, {
+          position: 'top-right', // Change the position of the toast if needed
+          autoClose: 3000, // Close the toast automatically after 3000ms (3 seconds)
+          hideProgressBar: false, // Show or hide the progress bar
+          closeOnClick: true, // Close the toast when clicked
+          pauseOnHover: true, // Pause the autoClose timer when hovered
+          draggable: true, // Make the toast draggable
+          progress: undefined, // Use the progress prop to set the progress of the toast
+        });
+      }
     },
   });
+
 
 
   return (
@@ -69,13 +104,13 @@ const Register = () => {
                   type="text"
                   size="small"
                   fullWidth
-                  name="fname"
-                  value={values.fname}
+                  name="firstName"
+                  value={values.firstName}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   style={{fontFamily: "Work Sans"}}
-                  helperText={errors.fname && touched.fname ? errors.fname :null}
-                  error={errors.fname && touched.fname}
+                  helperText={errors.firstName && touched.firstName ? errors.firstName :null}
+                  error={errors.firstName && touched.firstName}
                 />
 
               </Grid>
@@ -87,12 +122,12 @@ const Register = () => {
                   type="text"
                   size="small"
                   fullWidth
-                  name="lname"
-                  value={values.lname}
+                  name="lastName"
+                  value={values.lastName}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  helperText={errors.lname && touched.lname ? errors.lname :null}
-                  error={errors.lname && touched.lname}
+                  helperText={errors.lastName && touched.lastName ? errors.lastName :null}
+                  error={errors.lastName && touched.lastName}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -126,8 +161,8 @@ const Register = () => {
                   fullWidth
                  displayEmpty
                 >
-                  <MenuItem value="User" defaultChecked style={{fontFamily: "Work Sans"}}>User</MenuItem>
-                  <MenuItem value="Admin" style={{fontFamily: "Work Sans"}}>Admin</MenuItem>
+                  <MenuItem value="Buyer" defaultChecked style={{fontFamily: "Work Sans"}}>Buyer</MenuItem>
+                  <MenuItem value="Seller" style={{fontFamily: "Work Sans"}}>Seller</MenuItem>
                 </Select>
 
 
@@ -149,13 +184,13 @@ const Register = () => {
                   type="password"
                   size="small"
                   fullWidth
-                  name="pass"
-                  value={values.pass}
+                  name="password"
+                  value={values.password}
                   onChange={handleChange}
                   style={{fontFamily: "Work Sans"}}
                   onBlur={handleBlur}
-                  helperText={errors.pass && touched.pass ? errors.pass :null}
-                  error={errors.pass && touched.pass}
+                  helperText={errors.password && touched.password ? errors.password :null}
+                  error={errors.password && touched.password}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -189,6 +224,7 @@ const Register = () => {
           </Box>
         </Box>
       </form>
+      <ToastContainer />
     </Container>
   );
 };
