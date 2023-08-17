@@ -6,71 +6,61 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import authService from "../services/auth.service";
+import { useNavigate } from "react-router-dom";
 
 const initialValues = {
   firstName: "",
   lastName: "",
   email: "",
   password: "",
-  cpass: "",
-  role: "",
+  confirmPassword: "",
+  roleId: 3,
 };
 
+const roleList = [
+  { id: 2, name: "seller" },
+  { id: 3, name: "buyer" },
+];
+
+
 const registerSchema = Yup.object({
-  firstName: Yup.string().min(2).max(25).required("please enter your first name"),
+  firstName: Yup.string()
+    .min(2)
+    .max(25)
+    .required("please enter your first name"),
   lastName: Yup.string().min(2).max(25).required("please enter your last name"),
   email: Yup.string().email().required("Please enter your email"),
-  password: Yup.string().min(6).required("Pleaase enter password with min 6 char"),
-  cpass: Yup.string()
+  password: Yup.string()
+    .min(6)
+    .required("Please enter password with min 6 char"),
+  confirmPassword: Yup.string()
     .required()
     .oneOf([Yup.ref("password"), null], "Password must match"),
+  roleId: Yup.number().required("Role is required"),
 });
 
-const Register = () => {
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
-    initialValues: initialValues,
-    validationSchema:registerSchema,
-    onSubmit: async (values) => {
 
-      const dataToSend = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        roleId: values.role == "User" ? 1 : 2,
-        password: values.password
-      };
-      try {
-        const response = await axios.post('http://localhost:5000/api/user', dataToSend);
-        if (response.data.code == 200) {
-          toast.success('User Register successfully!', {
-            position: 'top-right', // Change the position of the toast if needed
-            autoClose: 3000, // Close the toast automatically after 3000ms (3 seconds)
-            hideProgressBar: false, // Show or hide the progress bar
-            closeOnClick: true, // Close the toast when clicked
-            pauseOnHover: true, // Pause the autoClose timer when hovered
-            draggable: true, // Make the toast draggable
-            progress: undefined, // Use the progress prop to set the progress of the toast
-          });
+const Registration = () => {
+  const navigate = useNavigate();
 
-        }
-      } catch (error) {
-        toast.error(`${error.response.data.error}`, {
-          position: 'top-right', // Change the position of the toast if needed
-          autoClose: 3000, // Close the toast automatically after 3000ms (3 seconds)
-          hideProgressBar: false, // Show or hide the progress bar
-          closeOnClick: true, // Close the toast when clicked
-          pauseOnHover: true, // Pause the autoClose timer when hovered
-          draggable: true, // Make the toast draggable
-          progress: undefined, // Use the progress prop to set the progress of the toast
+const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: initialValues,
+      validationSchema: registerSchema,
+      onSubmit: (values) => {
+        // console.log("form vals", values);
+        // alert("sucessfull");
+        delete values.confirmPassword;
+        authService.create(values).then((res) => {
+          navigate("/login");
+          toast.success("Successfully registered");
         });
-      }
-    },
-  });
+      },
+    });
 
 
 
@@ -152,17 +142,21 @@ const Register = () => {
                   Role *
                 </Typography>
                 <Select
-                  value={values.role}
+                  value={values.roleId}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  name="role"
+                  name="roleId"
                   size="small"
                   style={{fontFamily: "Work Sans"}}
                   fullWidth
                  displayEmpty
                 >
-                  <MenuItem value="Buyer" defaultChecked style={{fontFamily: "Work Sans"}}>Buyer</MenuItem>
-                  <MenuItem value="Seller" style={{fontFamily: "Work Sans"}}>Seller</MenuItem>
+                  {roleList.length > 0 &&
+                    roleList.map((role) => (
+                      <MenuItem value={role.id} style={{fontFamily: "Work Sans"}} key={"name" + role.id}>
+                        {role.name}
+                      </MenuItem>
+                    ))}
                 </Select>
 
 
@@ -201,12 +195,12 @@ const Register = () => {
                   type="password"
                   size="small"
                   fullWidth
-                  name="cpass"
-                  value={values.cpass}
+                  name="confirmPassword"
+                  value={values.confirmPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  helperText={errors.cpass && touched.cpass ? errors.cpass :null}
-                  error={errors.cpass && touched.cpass}
+                  helperText={errors.confirmPassword && touched.confirmPassword ? errors.confirmPassword :null}
+                  error={errors.confirmPassword && touched.confirmPassword}
                 />
               </Grid>
             </Grid>
@@ -224,9 +218,8 @@ const Register = () => {
           </Box>
         </Box>
       </form>
-      <ToastContainer />
     </Container>
   );
 };
 
-export default Register;
+export default Registration;
